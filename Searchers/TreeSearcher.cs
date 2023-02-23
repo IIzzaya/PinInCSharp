@@ -79,7 +79,8 @@ namespace PinInCSharp.Searchers {
             public INode<T> Put(TreeSearcher<T> p, int name, int identifier) {
                 int length = end - start;
                 int match = p.acc.Common(start, name, length);
-                if (match >= length) exit = exit.Put(p, name + length, identifier);
+                if (match >= length) 
+                  exit = exit.Put(p, name + length, identifier);
                 else {
                     Cut(p, start + match);
                     exit = exit.Put(p, name + match, identifier);
@@ -189,7 +190,7 @@ namespace PinInCSharp.Searchers {
                 else {
                     Init();
                     char ch = p.strs.Get(name);
-                    INode<T> sub = children[ch];
+                    INode<T> sub = children.GetValueOrDefault(ch, null);
                     if (sub == null) {
                         sub = new NDense<T>();
                         Put(ch, sub);
@@ -230,7 +231,7 @@ namespace PinInCSharp.Searchers {
                     else Get(p, ret);
                 }
                 else {
-                    INode<T> n = children[p.acc.Search()[offset]];
+                    INode<T> n = children.GetValueOrDefault(p.acc.Search()[offset], null);
                     if (n != null) n.Get(p, ret, offset + 1);
                     index.ForEach(pair => {
                         var k = pair.Key;
@@ -257,12 +258,10 @@ namespace PinInCSharp.Searchers {
             private void Index(TreeSearcher<T> p, char c) {
                 Elements.Char ch = p.GetContext().GetChar(c);
                 foreach (Pinyin py in ch.GetPinyins()) {
-                    index.Compute(py.phonemes[0], (j, cs) => {
-                        if (cs == null) return new HashSet<char>();
-                        if (cs is HashSet<char> && cs.Count >= THRESHOLD && !cs.Contains(c))
-                            return new HashSet<char>(cs);
-                        return cs;
-                    }).Add(c);
+                    if (!index.ContainsKey(py.phonemes[0])) {
+                        index.Add(py.phonemes[0], new HashSet<char>());
+                    }
+                    index[py.phonemes[0]].Add(c);
                 }
             }
         }

@@ -4,26 +4,6 @@ using System.Text;
 
 namespace PinInCSharp {
     public static class Extensions {
-        public static V Compute<K, V>(this Dictionary<K, V> dict, K key, Func<K, V, V> func) {
-            // if no func given, throw.
-            if (func == null) throw new ArgumentNullException(nameof(func));
-            // if no mapping, return null.
-            if (!dict.TryGetValue(key, out var value)) return default;
-            // get the new value from func.
-            var result = func(key, value);
-            if (result == null) {
-                // if the mapping exists but func => null,
-                // remove the mapping and return null.
-                dict.Remove(key);
-                return default;
-            }
-
-            // mapping exists and func returned a non-null value.
-            // set and return the new value
-            dict[key] = result;
-            return result;
-        }
-
         /// <summary>Perform an action on each item.</summary>
         /// <param name="source">The source.</param>
         /// <param name="action">The action to perform.</param>
