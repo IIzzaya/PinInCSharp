@@ -60,9 +60,9 @@ namespace PinInCSharp {
                 return;
             }
             acc = new Accelerator(this);
-            var dataLineList = data.Split('\n');
+            var dataLineList = data.Split('\n', StringSplitOptions.RemoveEmptyEntries);
             foreach (var item in dataLineList) {
-                var pair = item.Split(':');
+                var pair = item.TrimEnd('\r').Split(':', StringSplitOptions.RemoveEmptyEntries);
                 if (pair.Length != 2 && pair[0].Length != 1) {
                     continue;
                 }
@@ -72,11 +72,11 @@ namespace PinInCSharp {
                     chars[c] = null;
                 }
                 else {
-                    var py = ss.Replace(" ", "").Split(',');
+                    var py = ss.Split(',', StringSplitOptions.RemoveEmptyEntries);
                     Pinyin[] pinyins = new Pinyin[py.Length];
 
                     for (int i = 0; i < py.Length; i++) {
-                        pinyins[i] = GetPinyin(py[i]);
+                        pinyins[i] = GetPinyin(py[i].TrimStart(' ').TrimEnd(' '));
                     }
 
                     chars[c] = new Elements.Char(c, pinyins);
